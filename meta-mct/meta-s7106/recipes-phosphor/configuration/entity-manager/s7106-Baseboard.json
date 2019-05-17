@@ -658,7 +658,7 @@
         }
     ],
     "Name": "s7106 Baseboard",
-    "Probe": "xyz.openbmc_project.FruDevice({'BOARD_PRODUCT_NAME': '.*S7106*'})",
+    "Probe": "xyz.openbmc_project.FruDevice({'PRODUCT_PRODUCT_NAME': '.*S7106*'})",
     "Type": "Board",
     "xyz.openbmc_project.Inventory.Decorator.Asset": {
         "Manufacturer": "$PRODUCT_MANUFACTURER",

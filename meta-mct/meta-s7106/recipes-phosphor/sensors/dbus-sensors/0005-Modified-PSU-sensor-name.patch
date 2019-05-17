@@ -1,0 +1,30 @@
+From 5e23534095a388d8bf8d854500ea93c6bcc0f91b Mon Sep 17 00:00:00 2001
+From: jeannie <jeannie@localhost.localdomain>
+Date: Fri, 17 May 2019 17:37:06 +0800
+Subject: [PATCH] Modified PSU sensor name
+
+---
+ src/PSUSensorMain.cpp | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/src/PSUSensorMain.cpp b/src/PSUSensorMain.cpp
+index 82e0a24..0387e30 100755
+--- a/src/PSUSensorMain.cpp
++++ b/src/PSUSensorMain.cpp
+@@ -278,11 +278,11 @@ void propertyInitialize(
+                    {"in", "voltage/"},
+                    {"fan", "fan_tach/"}};
+ 
+-    labelMatch = {{"pin", PSUProperty("Input Power", 3000, 0, 6)},
+-                  {"pout1", PSUProperty("Output Power", 3000, 0, 6)},
+-                  {"vin", PSUProperty("Input Voltage", 255, 0, 3)},
+-                  {"iin", PSUProperty("Input Current", 20, 0, 3)},
+-                  {"iout1", PSUProperty("Output Current", 255, 0, 3)},
++    labelMatch = {{"pin", PSUProperty("InPower", 3000, 0, 6)},
++                  {"pout1", PSUProperty("OutPower", 3000, 0, 6)},
++                  {"vin", PSUProperty("InVoltage", 255, 0, 3)},
++                  {"iin", PSUProperty("InCurrent", 20, 0, 3)},
++                  {"iout1", PSUProperty("OutCurrent", 255, 0, 3)},
+                   {"temp1", PSUProperty("Temperature", 127, -128, 3)},
+                   {"fan1", PSUProperty("Fan Speed 1", 10000, 0, 0)},
+                   {"fan2", PSUProperty("Fan Speed 2", 10000, 0, 0)}};

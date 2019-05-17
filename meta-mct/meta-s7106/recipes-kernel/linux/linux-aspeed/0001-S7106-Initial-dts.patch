@@ -4,8 +4,8 @@ Date: Mon, 3 Dec 2018 16:44:34 +0800
 Subject: [PATCH] [S7106] Initial dts
 
 ---
- arch/arm/boot/dts/aspeed-bmc-mct-s7106.dts | 317 +++++++++++++++++++++++++++++
- 1 file changed, 317 insertions(+)
+ arch/arm/boot/dts/aspeed-bmc-mct-s7106.dts | 321 +++++++++++++++++++++++++++++
+ 1 file changed, 321 insertions(+)
  create mode 100755 arch/arm/boot/dts/aspeed-bmc-mct-s7106.dts
 
 diff --git a/arch/arm/boot/dts/aspeed-bmc-mct-s7106.dts b/arch/arm/boot/dts/aspeed-bmc-mct-s7106.dts
@@ -13,7 +13,7 @@ new file mode 100755
 index 0000000..a8b1ddd
 --- /dev/null
 +++ b/arch/arm/boot/dts/aspeed-bmc-mct-s7106.dts
-@@ -0,0 +1,317 @@
+@@ -0,0 +1,321 @@
 +// SPDX-License-Identifier: GPL-2.0
 +// Copyright (c) 2017 Intel Corporation
 +/dts-v1/;
@@ -211,6 +211,10 @@ index 0000000..a8b1ddd
 +        compatible = "ibm,cffps1";
 +        reg = <0x58>;
 +    };
++       power-supply@59 {
++       compatible = "ibm,cffps1";
++       reg = <0x59>;
++    };
 +};
 +
 +&i2c4 {
@@ -246,39 +250,39 @@ index 0000000..a8b1ddd
 +	status = "okay";
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&pinctrl_pwm0_default &pinctrl_pwm1_default &pinctrl_pwm2_default &pinctrl_pwm3_default &pinctrl_pwm4_default &pinctrl_pwm5_default>;
-+    cpufan@0 {
-+        reg = <0x00>;
-+        aspeed,fan-tach-ch = /bits/ 8 <0x00>;
++    fan@0 {
++        reg = <0x03>;
++        aspeed,fan-tach-ch = /bits/ 8 <0x08>;
 +    };
 +
-+    cpufan@1 {
-+        reg = <0x01>;
-+        aspeed,fan-tach-ch = /bits/ 8 <0x01>;
-+    };
-+	
-+	frontfan@1 {
-+        reg = <0x02>;
-+        aspeed,fan-tach-ch = /bits/ 8 <0x02>;
-+    };
-+	
-+	frontfan@2 {
++    fan_front@1 {
 +        reg = <0x03>;
 +        aspeed,fan-tach-ch = /bits/ 8 <0x03>;
 +    };
-+
-+	frontfan@3 {
-+        reg = <0x04>;
-+        aspeed,fan-tach-ch = /bits/ 8 <0x04>;
++	
++    fan_rear@1 {
++        reg = <0x03>;
++        aspeed,fan-tach-ch = /bits/ 8 <0x09>;
++    };
++	
++    fan@2 {
++        reg = <0x03>;
++        aspeed,fan-tach-ch = /bits/ 8 <0x0a>;
 +    };
 +
-+	rearfan@1 {
++    fan@3 {
 +        reg = <0x04>;
-+        aspeed,fan-tach-ch = /bits/ 8 <0x05>;
++        aspeed,fan-tach-ch = /bits/ 8 <0x0b>;
 +    };
 +
-+	rearfan@2 {
++    fan@4 {
 +        reg = <0x04>;
-+        aspeed,fan-tach-ch = /bits/ 8 <0x06>;
++        aspeed,fan-tach-ch = /bits/ 8 <0x0c>;
++    };
++
++    fan@5 {
++        reg = <0x04>;
++        aspeed,fan-tach-ch = /bits/ 8 <0x0d>;
 +    };
 +};
 +
