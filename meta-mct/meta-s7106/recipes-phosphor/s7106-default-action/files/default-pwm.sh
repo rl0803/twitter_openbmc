@@ -21,6 +21,9 @@ systemctl start xyz.openbmc_project.ipmbsensor.service
 systemctl stop xyz.openbmc_project.adcsensor.service
 systemctl start xyz.openbmc_project.adcsensor.service
 
+systemctl stop xyz.openbmc_project.psusensor.service
+systemctl start xyz.openbmc_project.psusensor.service
+
 touch /var/tmp/acflag
 fi
 
