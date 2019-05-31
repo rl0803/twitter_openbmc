@@ -1,6 +1,6 @@
-From 5e23534095a388d8bf8d854500ea93c6bcc0f91b Mon Sep 17 00:00:00 2001
-From: jeannie <jeannie@localhost.localdomain>
-Date: Fri, 17 May 2019 17:37:06 +0800
+From 43590e64ce038dce9a60b662ff44dc5153171b84 Mon Sep 17 00:00:00 2001
+From: "jeannie.wu" <jeannie.wu@mic.com.tw>
+Date: Fri, 31 May 2019 10:49:59 +0800
 Subject: [PATCH] Modified PSU sensor name
 
 ---
@@ -8,21 +8,21 @@ Subject: [PATCH] Modified PSU sensor name
  1 file changed, 5 insertions(+), 5 deletions(-)
 
 diff --git a/src/PSUSensorMain.cpp b/src/PSUSensorMain.cpp
-index 82e0a24..0387e30 100755
+index 049051b..e4f4747 100755
 --- a/src/PSUSensorMain.cpp
 +++ b/src/PSUSensorMain.cpp
-@@ -278,11 +278,11 @@ void propertyInitialize(
+@@ -280,11 +280,11 @@ void propertyInitialize(
                     {"in", "voltage/"},
                     {"fan", "fan_tach/"}};
  
 -    labelMatch = {{"pin", PSUProperty("Input Power", 3000, 0, 6)},
 -                  {"pout1", PSUProperty("Output Power", 3000, 0, 6)},
--                  {"vin", PSUProperty("Input Voltage", 255, 0, 3)},
+-                  {"vin", PSUProperty("Input Voltage", 300, 0, 3)},
 -                  {"iin", PSUProperty("Input Current", 20, 0, 3)},
 -                  {"iout1", PSUProperty("Output Current", 255, 0, 3)},
 +    labelMatch = {{"pin", PSUProperty("InPower", 3000, 0, 6)},
 +                  {"pout1", PSUProperty("OutPower", 3000, 0, 6)},
-+                  {"vin", PSUProperty("InVoltage", 255, 0, 3)},
++                  {"vin", PSUProperty("InVoltage", 300, 0, 3)},
 +                  {"iin", PSUProperty("InCurrent", 20, 0, 3)},
 +                  {"iout1", PSUProperty("OutCurrent", 255, 0, 3)},
                    {"temp1", PSUProperty("Temperature", 127, -128, 3)},

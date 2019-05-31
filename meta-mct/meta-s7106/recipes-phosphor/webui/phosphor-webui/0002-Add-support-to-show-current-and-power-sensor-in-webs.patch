@@ -1,0 +1,107 @@
+From 3e603aa0481a43920aa0c106d5275bfcd41f06be Mon Sep 17 00:00:00 2001
+From: "jeannie.wu" <jeannie.wu@mic.com.tw>
+Date: Fri, 31 May 2019 10:53:40 +0800
+Subject: [PATCH] Add support to show current and power sensor in website
+ sensor list
+
+---
+ .../controllers/sensors-overview-controller.html   | 26 +++++++++++++++++++---
+ .../controllers/sensors-overview-controller.js     | 15 +++++++++++--
+ 2 files changed, 36 insertions(+), 5 deletions(-)
+
+diff --git a/app/server-health/controllers/sensors-overview-controller.html b/app/server-health/controllers/sensors-overview-controller.html
+index 3ad4aa6..36238d6 100644
+--- a/app/server-health/controllers/sensors-overview-controller.html
++++ b/app/server-health/controllers/sensors-overview-controller.html
+@@ -51,13 +51,13 @@
+     </div>
+   </section>
+ 
+-  <section class="row column" ng-show="(filteredVoltSensors.length + filteredTempSensors.length + filteredFanSensors.length) == 0">
++  <section class="row column" ng-show="(filteredVoltSensors.length + filteredTempSensors.length + filteredFanSensors.length + filteredPowerSupplies.length + filteredCurrentSensors.length) == 0">
+     <span ng-if="selectedSeverity.all">{{messages.NO_SENSOR_DATA}}</span>
+     <span ng-if="selectedSeverity.critical">{{messages.CRITICAL_NO_SENSOR_DATA}}</span>
+     <span ng-if="selectedSeverity.warning">{{messages.WARNING_NO_SENSOR_DATA}}</span>
+     <span ng-if="selectedSeverity.ok">{{messages.NORMAL_NO_SENSOR_DATA}}</span>
+   </section>
+-  <section id="sensor-categories" class="table row column" ng-hide="(filteredVoltSensors.length + filteredTempSensors.length + filteredFanSensors.length) == 0">
++  <section id="sensor-categories" class="table row column" ng-hide="(filteredVoltSensors.length + filteredTempSensors.length + filteredFanSensors.length + filteredPowerSupplies.length + filteredCurrentSensors.length) == 0">
+       <div class="table row column sensor__table" ng-hide="loading">
+         <div class="table__head fixed-table-header">
+           <div class="table__row">
+@@ -98,7 +98,27 @@
+             <div class="table__cell sensor__threshold" ng-show="showThresholds">NA</div>
+             <div class="table__cell sensor__threshold" ng-show="showThresholds">NA</div>
+           </div>
+-        </div>
++
++         <div class="table__row" ng-repeat="sensor in (filteredCurrentSensors = (sensorsInfo.Current | filter:filterBySearchTerms | filter:filterBySeverity))">
++            <div class="table__cell sensor__title">{{sensor.Name}}</div>
++            <div class="table__cell sensor__status sensor__{{sensor.Status.Health}}">{{sensor.Status.Health}}</div>
++            <div class="table__cell sensor__threshold" ng-show="showThresholds">{{sensor.LowerThresholdCritical | number:2}} {{sensor.ReadingUnits}}</div>
++            <div class="table__cell sensor__threshold" ng-show="showThresholds">{{sensor.LowerThresholdNonCritical | number:2}} {{sensor.ReadingUnits}}</div>
++            <div class="table__cell sensor__reading">{{sensor.Reading | number:2}} {{sensor.ReadingUnits}}</div>
++            <div class="table__cell sensor__threshold" ng-show="showThresholds">{{sensor.UpperThresholdNonCritical | number:2}} {{sensor.ReadingUnits}}</div>
++            <div class="table__cell sensor__threshold" ng-show="showThresholds">{{sensor.UpperThresholdCritical | number:2}} {{sensor.ReadingUnits}}</div>
++          </div>
++
++          <div class="table__row" ng-repeat="sensor in (filteredPowerSupplies = (sensorsInfo.PowerSupplies | filter:filterBySearchTerms | filter:filterBySeverity))">
++            <div class="table__cell sensor__title">{{sensor.Name}}</div>
++            <div class="table__cell sensor__status sensor__{{sensor.Status.Health}}">{{sensor.Status.Health}}</div>
++            <div class="table__cell sensor__threshold" ng-show="showThresholds">{{sensor.LowerThresholdCritical | number:2}} {{sensor.ReadingUnits}}</div>
++            <div class="table__cell sensor__threshold" ng-show="showThresholds">{{sensor.LowerThresholdNonCritical | number:2}} {{sensor.ReadingUnits}}</div>
++            <div class="table__cell sensor__reading">{{sensor.Reading | number:2}} {{sensor.ReadingUnits}}</div>
++            <div class="table__cell sensor__threshold" ng-show="showThresholds">{{sensor.UpperThresholdNonCritical | number:2}} {{sensor.ReadingUnits}}</div>
++            <div class="table__cell sensor__threshold" ng-show="showThresholds">{{sensor.UpperThresholdCritical | number:2}} {{sensor.ReadingUnits}}</div>
++          </div>
++</div>
+       </div>
+   </section>
+ </div>
+diff --git a/app/server-health/controllers/sensors-overview-controller.js b/app/server-health/controllers/sensors-overview-controller.js
+index 96349d2..3ae7667 100644
+--- a/app/server-health/controllers/sensors-overview-controller.js
++++ b/app/server-health/controllers/sensors-overview-controller.js
+@@ -122,7 +122,7 @@ window.angular && (function(angular) {
+         if (index == -1) {
+           // Flattened sensor data to display all sensors.
+           $scope.selectedComponent = {'Name': 'All'};
+-          $scope.sensorsInfo = {'Temperatures': [], 'Fans': [], 'Voltages': []};
++          $scope.sensorsInfo = {'Temperatures': [], 'Fans': [], 'Voltages': [], 'PowerSupplies':[], 'Current':[]};
+           // Looping through all chassis collections to flattened sensors data
+           angular.forEach($scope.fullSensorsInfo, function(record) {
+             $scope.sensorsInfo.Temperatures = [].concat(
+@@ -131,6 +131,11 @@ window.angular && (function(angular) {
+                 [].concat($scope.sensorsInfo.Fans, record.sensors.Fans);
+             $scope.sensorsInfo.Voltages =
+                 [].concat($scope.sensorsInfo.Voltages, record.sensors.Voltages);
++            $scope.sensorsInfo.PowerSupplies =
++                [].concat($scope.sensorsInfo.PowerSupplies, record.sensors.PowerSupplies);
++            $scope.sensorsInfo.Current =
++                [].concat($scope.sensorsInfo.Current, record.sensors.Current);
++
+           });
+         } else {
+           $scope.selectedComponent = $scope.fullSensorsInfo[index];
+@@ -141,7 +146,7 @@ window.angular && (function(angular) {
+ 
+       function getComponentSensors(component) {
+         var data = component;
+-        data['sensors'] = {'Temperatures': [], 'Fans': [], 'Voltages': []};
++        data['sensors'] = {'Temperatures': [], 'Fans': [], 'Voltages': [], 'PowerSupplies':[], 'Current':[]};
+         APIUtils.getSensorsInfo(component.Thermal['@odata.id'])
+             .then(function(res) {
+               if (res.hasOwnProperty('Temperatures')) {
+@@ -157,6 +162,12 @@ window.angular && (function(angular) {
+               if (res.hasOwnProperty('Voltages')) {
+                 data.sensors['Voltages'] = res.Voltages;
+               }
++              if (res.hasOwnProperty('PowerSupplies')) {
++                data.sensors['PowerSupplies'] = res.PowerSupplies;
++              }
++              if (res.hasOwnProperty('Current')) {
++                data.sensors['Current'] = res.Current;
++              }
+               return;
+             });
+         return data;

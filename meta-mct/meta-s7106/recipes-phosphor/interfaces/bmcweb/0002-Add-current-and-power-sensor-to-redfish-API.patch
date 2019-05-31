@@ -1,0 +1,199 @@
+From 1a1db62d060349bc39803503893210dc4c8445ab Mon Sep 17 00:00:00 2001
+From: "jeannie.wu" <jeannie.wu@mic.com.tw>
+Date: Fri, 31 May 2019 10:45:55 +0800
+Subject: [PATCH] Add current and power sensor to redfish API
+
+---
+ redfish-core/lib/power.hpp   |  3 +-
+ redfish-core/lib/sensors.hpp | 65 ++++++++++++++++++++++++++++++++------------
+ 2 files changed, 49 insertions(+), 19 deletions(-)
+
+diff --git a/redfish-core/lib/power.hpp b/redfish-core/lib/power.hpp
+index 2184114..26aaf3f 100644
+--- a/redfish-core/lib/power.hpp
++++ b/redfish-core/lib/power.hpp
+@@ -40,7 +40,8 @@ class Power : public Node
+   private:
+     std::initializer_list<const char*> typeList = {
+         "/xyz/openbmc_project/sensors/voltage",
+-        "/xyz/openbmc_project/sensors/power"};
++        "/xyz/openbmc_project/sensors/power",
++         "/xyz/openbmc_project/sensors/current"};
+     void doGet(crow::Response& res, const crow::Request& req,
+                const std::vector<std::string>& params) override
+     {
+diff --git a/redfish-core/lib/sensors.hpp b/redfish-core/lib/sensors.hpp
+index c44ff71..3c98f06 100644
+--- a/redfish-core/lib/sensors.hpp
++++ b/redfish-core/lib/sensors.hpp
+@@ -483,15 +483,24 @@ void objectInterfacesToJson(
+     {
+         std::string sensorNameLower =
+             boost::algorithm::to_lower_copy(sensorName);
+-
++#if 0
+         if (sensorNameLower.find("input") != std::string::npos)
+         {
+             unit = "PowerInputWatts";
+         }
+         else
+         {
+-            unit = "PowerOutputWatts";
++            unit = "PowerOutputWatts"
+         }
++#endif   
++            unit = "Reading";
++            sensor_json["ReadingUnits"] = "Watt";
++          
++    }
++    else if (sensorType == "current")
++    {
++             unit = "Reading";
++             sensor_json["ReadingUnits"] = "Ampere";
+     }
+     else
+     {
+@@ -505,8 +514,8 @@ void objectInterfacesToJson(
+     properties.emplace_back("xyz.openbmc_project.Sensor.Value", "Value", unit);
+ 
+     // If sensor type doesn't map to Redfish PowerSupply, add threshold props
+-    if ((sensorType != "current") && (sensorType != "power"))
+-    {
++   // if ((sensorType != "current") && (sensorType != "power"))
++    //{
+         properties.emplace_back("xyz.openbmc_project.Sensor.Threshold.Warning",
+                                 "WarningHigh", "UpperThresholdNonCritical");
+         properties.emplace_back("xyz.openbmc_project.Sensor.Threshold.Warning",
+@@ -515,7 +524,7 @@ void objectInterfacesToJson(
+                                 "CriticalHigh", "UpperThresholdCritical");
+         properties.emplace_back("xyz.openbmc_project.Sensor.Threshold.Critical",
+                                 "CriticalLow", "LowerThresholdCritical");
+-    }
++    //}
+ 
+     // TODO Need to get UpperThresholdFatal and LowerThresholdFatal
+ 
+@@ -526,7 +535,8 @@ void objectInterfacesToJson(
+         properties.emplace_back("xyz.openbmc_project.Sensor.Value", "MaxValue",
+                                 "MaxReadingRangeTemp");
+     }
+-    else if ((sensorType != "current") && (sensorType != "power"))
++#if 1  
++    else // if ((sensorType != "current") && (sensorType != "power"))
+     {
+         // Sensor type doesn't map to Redfish PowerSupply; add min/max props
+         properties.emplace_back("xyz.openbmc_project.Sensor.Value", "MinValue",
+@@ -534,7 +544,7 @@ void objectInterfacesToJson(
+         properties.emplace_back("xyz.openbmc_project.Sensor.Value", "MaxValue",
+                                 "MaxReadingRange");
+     }
+-
++#endif
+     for (const std::tuple<const char*, const char*, const char*>& p :
+          properties)
+     {
+@@ -786,10 +796,10 @@ static void
+ void sortJSONResponse(std::shared_ptr<SensorsAsyncResp> SensorsAsyncResp)
+ {
+     nlohmann::json& response = SensorsAsyncResp->res.jsonValue;
+-    std::array<std::string, 2> sensorHeaders{"Temperatures", "Fans"};
++    std::array<std::string, 3> sensorHeaders{"Temperatures", "Fans"};
+     if (SensorsAsyncResp->chassisSubNode == "Power")
+     {
+-        sensorHeaders = {"Voltages", "PowerSupplies"};
++        sensorHeaders = {"Voltages", "PowerSupplies","Current"};
+     }
+     for (const std::string& sensorGroup : sensorHeaders)
+     {
+@@ -894,6 +904,7 @@ void getSensorData(
+                 const std::string& sensorName = split[5];
+                 BMCWEB_LOG_DEBUG << "sensorName " << sensorName
+                                  << " sensorType " << sensorType;
++                std::printf("sensorType:%s\n",sensorType);
+                 if (sensorNames->find(objPath) == sensorNames->end())
+                 {
+                     BMCWEB_LOG_ERROR << sensorName << " not in sensor list ";
+@@ -916,7 +927,7 @@ void getSensorData(
+                 }
+                 else if (sensorType == "current")
+                 {
+-                    fieldName = "PowerSupplies";
++                    fieldName = "Current";
+                 }
+                 else if (sensorType == "power")
+                 {
+@@ -932,19 +943,19 @@ void getSensorData(
+                 nlohmann::json& tempArray =
+                     SensorsAsyncResp->res.jsonValue[fieldName];
+ 
+-                if (fieldName == "PowerSupplies" && !tempArray.empty())
+-                {
++//                if (fieldName == "PowerSupplies" && !tempArray.empty())
++//                {
+                     // Power supplies put multiple "sensors" into a single power
+                     // supply entry, so only create the first one
+-                }
+-                else
+-                {
++//                }
++//                else
++//                {
+                     tempArray.push_back(
+                         {{"@odata.id", "/redfish/v1/Chassis/" +
+                                            SensorsAsyncResp->chassisId + "/" +
+                                            SensorsAsyncResp->chassisSubNode +
+                                            "#/" + fieldName + "/"}});
+-                }
++//                }
+                 nlohmann::json& sensorJson = tempArray.back();
+ 
+                 objectInterfacesToJson(sensorName, sensorType,
+@@ -1086,6 +1097,8 @@ void setSensorOverride(crow::Response& res, const crow::Request& req,
+     std::optional<std::vector<nlohmann::json>> temperatureCollections;
+     std::optional<std::vector<nlohmann::json>> fanCollections;
+     std::vector<nlohmann::json> voltageCollections;
++    std::vector<nlohmann::json> powersuppliesCollections;
++    std::vector<nlohmann::json> currentCollections;
+     BMCWEB_LOG_INFO << "setSensorOverride for subNode" << chassisSubNode
+                     << "\n";
+ 
+@@ -1116,11 +1129,25 @@ void setSensorOverride(crow::Response& res, const crow::Request& req,
+     }
+     else if (chassisSubNode == "Power")
+     {
+-        if (!json_util::readJson(req, res, "Voltages", voltageCollections))
++        if (!json_util::readJson(req, res, "Voltages", voltageCollections)) 
+         {
+             return;
+         }
+         allCollections.emplace("Voltages", std::move(voltageCollections));
++
++        if (!json_util::readJson(req, res, "Current", currentCollections))
++        {
++            return;
++        }
++        allCollections.emplace("Current", std::move(currentCollections));
++        
++  
++        if (!json_util::readJson(req, res, "PowerSupplies", powersuppliesCollections))
++        {
++            return;
++        }
++           allCollections.emplace("PowerSupplies", std::move(powersuppliesCollections));
++
+     }
+     else
+     {
+@@ -1143,9 +1170,11 @@ void setSensorOverride(crow::Response& res, const crow::Request& req,
+         {
+             propertyValueName = "Reading";
+         }
+-        else
++        else if (collectionItems.first == "Voltages")
+         {
+             propertyValueName = "ReadingVolts";
++        }else{
++            propertyValueName = "Reading";
+         }
+         for (auto& item : collectionItems.second)
+         {

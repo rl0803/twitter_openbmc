@@ -58,14 +58,14 @@
                 "Type": "EEPROM"
             }
         ],
-        "Name": "Delta DPS-650AB PSU 2",
+        "Name": "Delta DPS-650AB PSU 1",
 		"Probe": "xyz.openbmc_project.FruDevice({'PRODUCT_PRODUCT_NAME': '.*DPS-650*', 'ADDRESS': 81})",
         "Type": "PowerSupply",
         "xyz.openbmc_project.Inventory.Decorator.Asset": {
-            "Manufacturer": "$BOARD_MANUFACTURER",
-            "Model": "$BOARD_PRODUCT_NAME",
-            "PartNumber": "$BOARD_PART_NUMBER",
-            "SerialNumber": "$BOARD_SERIAL_NUMBER"
+            "Manufacturer": "$PRODUCT_MANUFACTURER",
+            "Model": "$PRODUCT_PRODUCT_NAME",
+            "PartNumber": "$PRODUCT_PART_NUMBER",
+            "SerialNumber": "$PRODUCT_SERIAL_NUMBER"
         }
     },
 	     {
@@ -127,14 +127,14 @@
                 "Type": "EEPROM"
             }
         ],
-        "Name": "Delta DPS-650AB PSU 1",
+        "Name": "Delta DPS-650AB PSU 0",
 		"Probe": "xyz.openbmc_project.FruDevice({'PRODUCT_PRODUCT_NAME': '.*DPS-650*', 'ADDRESS': 80})",
         "Type": "PowerSupply",
         "xyz.openbmc_project.Inventory.Decorator.Asset": {
-            "Manufacturer": "$BOARD_MANUFACTURER",
-            "Model": "$BOARD_PRODUCT_NAME",
-            "PartNumber": "$BOARD_PART_NUMBER",
-            "SerialNumber": "$BOARD_SERIAL_NUMBER"
+            "Manufacturer": "$PRODUCT_MANUFACTURER",
+            "Model": "$PRODUCT_PRODUCT_NAME",
+            "PartNumber": "$PRODUCT_PART_NUMBER",
+            "SerialNumber": "$PRODUCT_SERIAL_NUMBER"
         }
     }
 ]
